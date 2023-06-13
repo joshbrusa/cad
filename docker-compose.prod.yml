@@ -1,0 +1,8 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web/src:/code/src
+      - ./web/public:/code/public
