@@ -13,6 +13,7 @@ docker compose -f COMPOSE FILE COMMAND [FLAG]
 
 ### Command
 
+- build: Build or rebuild services.
 - start: Start services.
 - stop: Stop services.
 - up: Create and start containers.

@@ -1,10 +1,35 @@
 services:
+  db:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/db:/data/db
+
+  core:
+    image: cad-core-development
+    restart: always
+    build:
+      context: ./core
+      dockerfile: Dockerfile.development
+    ports:
+      - "3001:80"
+    depends_on:
+      - db
+    volumes:
+      - ./core/src:/code/src
+
   web:
     image: cad-web-development
+    restart: always
     build:
       context: ./web
       dockerfile: Dockerfile.development
     ports:
-      - "3000:3000"
+      - "3000:80"
+    depends_on:
+      - core
     volumes:
       - ./web/src:/code/src
