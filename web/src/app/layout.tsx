@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body className="dark-theme">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
