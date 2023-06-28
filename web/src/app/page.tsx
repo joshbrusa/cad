@@ -1,31 +1,18 @@
-"use client";
-import { cookies } from "next/headers";
+// import useTheme from "hooks/useTheme";
 
 export default function Home() {
+  // const { setTheme, deleteTheme } = useTheme();
+
   return (
     <div>
       <h1>Hello World</h1>
-      <button
-        onClick={() => {
-          cookies().set("colorScheme", "light");
-        }}
-      >
+      {/* <button onClick={() => setTheme({ theme: "light" })}>
         Set Light Color Scheme
       </button>
-      <button
-        onClick={() => {
-          cookies().set("colorScheme", "dark");
-        }}
-      >
+      <button onClick={() => setTheme({ theme: "dark" })}>
         Set Dark Color Scheme
       </button>
-      <button
-        onClick={() => {
-          cookies().delete("colorScheme");
-        }}
-      >
-        Set No Color Scheme
-      </button>
+      <button onClick={deleteTheme}>Set No Color Scheme</button> */}
     </div>
   );
 }
