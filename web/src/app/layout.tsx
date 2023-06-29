@@ -1,13 +1,13 @@
 import "./globals.css";
+import ThemeProvider from "components/ThemeProvider";
+import type { ReactNode } from "react";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
