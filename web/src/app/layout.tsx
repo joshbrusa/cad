@@ -2,7 +2,7 @@ import "./globals.css";
 import ThemeProvider from "components/ThemeProvider";
 import type { ReactNode } from "react";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default ({ children }: { children: ReactNode }) => {
   return (
     <html>
       <body>
@@ -10,4 +10,4 @@ export default function Layout({ children }: { children: ReactNode }) {
       </body>
     </html>
   );
-}
+};

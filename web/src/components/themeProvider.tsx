@@ -5,18 +5,11 @@ import ThemeContext from "context/ThemeContext";
 import type { ReactNode } from "react";
 import type { Theme } from "context/ThemeContext";
 
-export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const [hydrated, setHydrated] = useState(false);
-  const [hydratedTheme, setHydratedTheme] = useState(false);
+export default ({ children }: { children: ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>(null);
 
   useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-
     const theme = localStorage.getItem("theme");
 
     switch (theme) {
@@ -26,18 +19,13 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       case "dark":
         setTheme(theme);
         break;
-      default:
-        setTheme(null);
     }
 
-    setHydratedTheme(true);
-  }, [hydrated]);
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
-
-    console.log(hydrated);
-    console.log(theme);
+    if (!mounted) return;
 
     switch (theme) {
       case "light":
@@ -52,9 +40,9 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
         document.documentElement.removeAttribute("theme");
         localStorage.removeItem("theme");
     }
-  }, [hydratedTheme, theme]);
+  }, [theme]);
 
-  if (!hydrated) {
+  if (!mounted) {
     return;
   }
 
@@ -63,4 +51,4 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
-}
+};
