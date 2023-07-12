@@ -1,3 +1,6 @@
+import Canvas from "@/components/Canvas";
+
 export default () => {
-  return <div>Hi</div>;
+  console.log("hi");
+  return <Canvas />;
 };
