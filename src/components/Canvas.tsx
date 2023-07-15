@@ -1,39 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { MouseEventHandler } from "react";
 
-type Coordinate = {
+type Point = {
   x: number;
   y: number;
 };
 
+type Line = {
+  lineStart: Point;
+  lineEnd: Point;
+};
+
 export default () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [coordinate, setCoordinate] = useState<Coordinate | null>(null);
-  const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
-
-  console.log(coordinate);
-  console.log(coordinates);
-
-  const drawing = useCallback(
-    (event: MouseEvent) => {
-      setCoordinates((prev) => [
-        ...prev,
-        { x: event.clientX, y: event.clientY },
-      ]);
-      setIsDrawing(!isDrawing);
-    },
-    [isDrawing, coordinate]
-  );
-
-  const draw = useCallback(
-    (event: MouseEvent) => {
-      if (!isDrawing) return;
-      setCoordinate({ x: event.clientX, y: event.clientY });
-    },
-    [isDrawing]
-  );
+  const [lines, setLines] = useState<Line[]>([]);
+  const [lineStart, setLineStart] = useState<Point | null>(null);
+  const [lineEnd, setLineEnd] = useState<Point | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,53 +26,52 @@ export default () => {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", handleResize);
-    canvas.addEventListener("mousedown", drawing);
-    canvas.addEventListener("mousemove", draw);
-
-    // cleanup
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      canvas.removeEventListener("mousedown", drawing);
-      canvas.removeEventListener("mousemove", draw);
-    };
-  }, [drawing, draw]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext("2d");
-    if (!context) return;
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
     context.strokeStyle = "white";
     context.lineWidth = 2;
 
-    // for (let i = 1; i <= coordinates.length; i++) {
-    //   context.beginPath();
-    //   context.moveTo(coordinates[i - 1].x, coordinates[i - 1].y);
-    //   context.lineTo(coordinates[i].x, coordinates[i].y);
-    //   context.stroke();
-    // }
+    lines.forEach((line) => {
+      context.beginPath();
+      context.moveTo(line.lineStart.x, line.lineStart.y);
+      context.lineTo(line.lineEnd.x, line.lineEnd.y);
+      context.stroke();
+    });
 
-    if (!coordinate) return;
+    if (!lineStart || !lineEnd) return;
 
     context.beginPath();
-    context.moveTo(
-      coordinates[coordinates.length - 1].x,
-      coordinates[coordinates.length - 1].y
-    );
-    context.lineTo(coordinate.x, coordinate.y);
+    context.moveTo(lineStart.x, lineStart.y);
+    context.lineTo(lineEnd.x, lineEnd.y);
     context.stroke();
-  }, [coordinate, coordinates]);
+  }, [lines, lineStart, lineEnd]);
 
-  return <canvas ref={canvasRef} />;
+  const handleMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
+    // start line
+    if (!lineStart || !lineEnd) {
+      setLineStart({ x: event.pageX, y: event.pageY });
+      setLineEnd(null);
+      return;
+    }
+
+    // end line
+    setLines((prev) => [...prev, { lineStart, lineEnd }]);
+    setLineStart(null);
+    setLineEnd(null);
+  };
+
+  const handleMouseMove: MouseEventHandler<HTMLCanvasElement> = (event) => {
+    if (!lineStart) return;
+    setLineEnd({ x: event.pageX, y: event.pageY });
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={window.innerWidth}
+      height={window.innerHeight}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+    />
+  );
 };
